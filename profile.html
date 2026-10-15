@@ -49,7 +49,7 @@
 .sq-unread-badge{position:absolute;right:-11px;top:-10px;display:flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ef233c;color:white;font:700 10px/1 system-ui;border:2px solid #171824;box-sizing:border-box;z-index:2}
 .sq-unread-badge[hidden]{display:none}.sq-bell .sq-unread-badge{right:-8px;top:-7px}
 .receipt.read{color:#68cfff;font-weight:600}
-</style></head>
+</style><link rel="stylesheet" href="community.css"><link rel="stylesheet" href="app-polish.css"></head>
 <body>
   <header class="top">
     <a class="brand" href="index.html"><img src="squadup-logo.svg" alt=""><span>SquadUp</span></a>
@@ -75,7 +75,7 @@
         <label>Gamer tag<input id="gamer-tag" maxlength="20" autocomplete="nickname" required></label>
         <label>Platform<select id="platform"><option>PlayStation</option><option>Xbox</option><option>PC</option><option>Mobile</option></select></label>
         <label>Favorite game<select id="game"></select></label>
-        <label>Assigned rank<select id="rank" disabled><option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option><option>Diamond</option><option>Elite</option></select><span class="rank-note">Your current player rank.</span></label>
+        <label>Game username / UID<input id="game-username" maxlength="80" placeholder="Your username or UID for the selected game"><span class="rank-note">Visible to other players. Never enter a password.</span></label><label>Assigned rank<select id="rank" disabled><option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option><option>Diamond</option><option>Elite</option></select><span class="rank-note">Your current player rank.</span></label>
         <label>Region<input id="region" maxlength="30" placeholder="e.g. Lagos, Europe"></label>
         <label>Mic preference<select id="mic"><option>Mic on</option><option>Mic optional</option><option>No mic</option></select></label>
         <label>Play style<select id="skill"><option>Casual</option><option>Competitive</option><option>Hardcore</option><option>Social</option></select></label>
@@ -119,6 +119,15 @@
       document.getElementById("mic").value = profile.mic || "Mic on";
       document.getElementById("skill").value = profile.skill || "Casual";
       document.getElementById("bio").value = profile.bio || "";
+      const gameIds = { ...(stored.game_ids || {}) };
+      const gameUsername = document.getElementById("game-username");
+      let usernameGame = gameSelect.value;
+      gameUsername.value = gameIds[usernameGame] || "";
+      gameSelect.addEventListener("change", () => {
+        gameIds[usernameGame] = gameUsername.value.trim();
+        usernameGame = gameSelect.value;
+        gameUsername.value = gameIds[usernameGame] || "";
+      });
       let avatarData = profile.avatar || "";
 
       function renderAvatar() {
@@ -171,9 +180,11 @@
         const button = document.getElementById("save");
         button.disabled = true;
         try {
+          gameIds[usernameGame] = gameUsername.value.trim();
           const { data: saved, error: saveError } = await client.from("profiles").update({
             gamer_tag: document.getElementById("gamer-tag").value.trim(),
             avatar: avatarData,
+            game_ids: gameIds,
             platform: document.getElementById("platform").value,
             game: document.getElementById("game").value,
             region: document.getElementById("region").value.trim(),
@@ -202,5 +213,5 @@
       document.getElementById("notice").textContent = "Could not load profile: " + error.message;
     });
 </script>
-<script src="chat-notifications.js"></script></body>
+<script src="chat-notifications.js"></script><script src="community.js"></script><footer class="silva-footer">Created by SILVA</footer></body>
 </html>
