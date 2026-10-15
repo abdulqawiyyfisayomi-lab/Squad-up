@@ -56,7 +56,7 @@
       <section class="intro">
         <div class="eyebrow"><span class="dot"></span> Find your people</div>
         <h1>Your next great game starts here.</h1>
-        <p>Create a local demo account and try player profiles, squad requests, and chat. Data stays in this browser;  use a password you use elsewhere.</p>
+        <p>Create a shared account to set up your player profile and chat with SquadUp players across devices.</p>
         <div class="perks"><span>Meet teammates for your favorite games</span><span>Set up a squad before you queue</span><span>Keep your game chat in one place</span></div>
       </section>
       <section class="panel" aria-labelledby="signup-title">
@@ -72,7 +72,7 @@
           <label for="password">Password
             <span class="password-wrap"><input id="password" name="password" type="password" placeholder="Create a password" autocomplete="new-password" minlength="8" maxlength="128" required><button class="reveal" type="button" aria-controls="password" aria-label="Show password">Show</button></span>
           </label>
-          <p class="hint">Use 8–128 characters. This browser-only demo cannot protect or recover accounts like a real account service.</p>
+          <p class="hint">Use 8–128 characters. Use a demo password for local accounts; shared accounts use the connected account service.</p>
           <p class="notice" id="notice" role="status" aria-live="polite"></p>
           <button class="submit" type="submit">Create account</button>
         </form>
@@ -81,7 +81,8 @@
     </div>
   </main>
   <footer>SquadUp · Find players, chat, play.</footer>
-  <script src="local-auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script>
     const form = document.getElementById("signup-form");
     const password = document.getElementById("password");
@@ -91,7 +92,19 @@
     const loginLink = document.getElementById("login-link");
     const loginTarget = new URL("login.html", location.href);
     if (next) loginTarget.searchParams.set("next", next);
+    for (const key of ["to", "name"]) {
+      const value = params.get(key);
+      if (value) loginTarget.searchParams.set(key, value);
+    }
     loginLink.href = loginTarget.href;
+    if (window.squadUpSupabase) {
+      window.squadUpSupabase.auth.getSession().then(({ data, error }) => {
+        if (error) throw error;
+        if (data.session) {
+          location.replace(next === "messages.html" ? "messages.html" : "index.html#profile");
+        }
+      }).catch(error => showNotice("Could not check your account: " + error.message));
+    }
     function showNotice(message) {
       notice.textContent = message;
       notice.style.display = "block";
@@ -107,17 +120,25 @@
       const button = form.querySelector(".submit");
       button.disabled = true;
       try {
+        if (window.squadUpSupabaseConfigError) throw new Error(window.squadUpSupabaseConfigError);
+      if (!window.squadUpSupabase) throw new Error("Live accounts are not configured yet. Add the Supabase project URL and public anon key to supabase-config.js.");
         const gamerTag = document.getElementById("gamer-tag").value.trim();
         if (!gamerTag) {
           showNotice("Enter a gamer tag before creating your account.");
           return;
         }
-        await window.SquadUpLocalAuth.signUp({
-          email: document.getElementById("email").value.trim(),
-          gamerTag,
-          password: password.value
+        const email = document.getElementById("email").value.trim();
+        const { data, error } = await window.squadUpSupabase.auth.signUp({
+          email,
+          password: password.value,
+          options: { data: { gamer_tag: gamerTag } }
         });
-        const target = new URL("profile.html", location.href);
+        if (error) throw error;
+        if (!data.session) {
+          showNotice("Check your email to confirm your account, then log in to start chatting.");
+          return;
+        }
+        const target = new URL(next === "messages.html" ? "messages.html" : "index.html#profile", location.href);
         if (next) target.searchParams.set("next", next);
         for (const key of ["to", "name"]) {
           const value = params.get(key);

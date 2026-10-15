@@ -96,7 +96,10 @@ body{min-height:100vh;background:radial-gradient(ellipse at 15% 0%,color-mix(in 
 .profile-card{scroll-margin-top:80px}
 .profile-avatar{width:42px;height:42px;flex:none;overflow:hidden;border:2px solid color-mix(in srgb,var(--ac) 55%,var(--bd));border-radius:50%;background:linear-gradient(145deg,#765cff,#d14bc0);object-fit:cover}
 h1{letter-spacing:-.04em}h1 span{ text-shadow:0 0 22px color-mix(in srgb,var(--ac) 38%,transparent)}
-.links a{transition:color .18s ease}.links a:hover{color:var(--ac)}
+.links a{transition:color .18s ease,background-color .18s ease,transform .18s ease}
+.links a:hover,.links a:focus-visible{color:var(--ac)}
+.links a:focus-visible{outline:2px solid var(--ac);outline-offset:4px;border-radius:6px}
+.links a:active{color:var(--ac);transform:scale(.96)}
 input,select,textarea{transition:border-color .18s ease,box-shadow .18s ease}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
 button,.cta{transition:transform .18s ease,box-shadow .18s ease,background-color .18s ease}
@@ -132,24 +135,24 @@ footer{margin-top:20px}
 </style></head><body>
 <div class="nav"><div class="top"><h1><img class="brand-mark" src="squadup-logo.svg" alt=""><span>Squad<img class="wordmark-pad" src="squadup-gamepad.svg" alt="" aria-hidden="true">Up</span></h1><div class="links"><a href="#play">Find players</a><a id="messagesLink" href="messages.html">Messages<svg class="message-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg><span id="messageCount" class="message-count" hidden></span></a><button id="messageAlertToggle" class="message-alert-toggle" type="button" hidden>Enable alerts</button><a class="profile-link" href="profile.html">My Profile</a><a href="#how">How it works</a><a href="#faq">FAQ</a><input id="name" placeholder="Your gamer tag" maxlength="20"><a id="loginLink" href="login.html">Log in</a><a class="auth-link" id="signupLink" href="signup.html">Sign up</a></div></div></div>
 <section class="hero"><h2>Find your squad.<br><em>Win more games.</em></h2>
-<p>Try out squad requests, player profiles, and chat in a local demo. Your data stays in this browser; it is not shared with other players or devices.</p>
+<p>Find squad requests, meet players, and chat live across devices. Sign in to post, join, and message your next teammates.</p>
 <a class="cta" href="#play">Find players now</a>
-<div class="stats"><div><b id="s1">0</b><span>requests in this browser</span></div><div><b id="s2">0</b><span>open spots</span></div><div><b id="s3">0</b><span>room messages here</span></div></div></section>
+<div class="stats"><div><b id="s1">0</b><span>live requests</span></div><div><b id="s2">0</b><span>open spots</span></div><div><b id="s3">0</b><span>live room messages</span></div></div></section>
 <section class="world-section">
   <div class="world-header">
     <div>
-      <div class="eyebrow">Local demo</div>
-      <h3 style="margin:0;font-size:32px;letter-spacing:-.04em">Explore the SquadUp experience.</h3>
+      <div class="eyebrow">Live squads</div>
+      <h3 style="margin:0;font-size:32px;letter-spacing:-.04em">Explore the SquadUp community.</h3>
     </div>
-    <a class="cta small" href="#play">Try the demo</a>
+    <a class="cta small" href="#play">Find a squad</a>
   </div>
   <div class="feature-row">
-    <div class="feature-tile"><b>Try the full flow</b><p>Create local profiles, post squad requests, and test room chat.</p></div>
-    <div class="feature-tile"><b>Stored in this browser</b><p>Demo accounts, profiles, and messages do not sync or transfer to another device.</p></div>
-    <div class="feature-tile"><b>Not a live community</b><p>There are no shared player accounts, verified identities, or live global lobbies in this demo.</p></div>
+    <div class="feature-tile"><b>Find your team</b><p>Browse live squad requests and see who is looking to play.</p></div>
+    <div class="feature-tile"><b>Squad up live</b><p>Post requests, join squads, and chat with your team in real time.</p></div>
+    <div class="feature-tile"><b>Player profiles</b><p>Build a shared profile and message registered players across devices.</p></div>
   </div>
 </section>
-<div class="wrap" id="play"><h3 style="font-size:26px;margin:24px 0 4px">Squad requests on this browser</h3><div class="status" id="status" style="padding:0 0 10px">Loading demo data…</div>
+<div class="wrap" id="play"><h3 style="font-size:26px;margin:24px 0 4px">Live squad requests</h3><div class="status" id="status" style="padding:0 0 10px">Connecting to SquadUp…</div>
 <!--
   Add a game picture by placing the image beside this HTML file, then add
   --tile-image:url('image-name.jpg') to that card's style attribute.
@@ -247,42 +250,26 @@ footer{margin-top:20px}
 <section class="sec faq" id="faq"><h3>FAQ</h3>
 <details><summary>Is it free?</summary><p>Yes, posting, joining and chatting are free.</p></details>
 <details><summary>Which games and platforms?</summary><p>21 game options across shooters, battle royale, sports, MOBA, fighting and sandbox titles, on PlayStation, Xbox, PC and Mobile. Pick Other game for anything not listed.</p></details>
-<details><summary>Is this connected to other players?</summary><p>No. This demo keeps accounts, requests, profiles, and chat in this browser. Other people and devices cannot see or join your data.</p></details>
+<details><summary>Can I chat with other players?</summary><p>Yes. Create a live SquadUp account to message players and chat in squad rooms across devices.</p></details>
 <details><summary>How do I get into the game with your squad?</summary><p>This demo does not contact game services. You can use its local room chat to try the flow, then share an in-game ID or party code yourself when you play.</p></details>
 <details><summary>How do I leave or close a request?</summary><p>Press Leave on a squad you joined, or Close on a request you posted.</p></details></section>
-<footer><b>SquadUp demo</b> · Try local profiles, squad requests, and chat.<br>Data stays in this browser and can be removed in your browser's site-data settings. Do not use real passwords or share sensitive personal details.<br>Not affiliated with any game publisher. Game names belong to their owners.</footer>
+<footer><b>SquadUp</b> · Find your people, squad up, and play.<br>Not affiliated with any game publisher. Game names belong to their owners.</footer>
 <div id="toast"></div>
-<script src="local-auth.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 <script>
 const G=(cat,c,s,m)=>({cat,c,s,m});
 const GAMES={"Call of Duty":G("Shooter","#d97706","COD",["Warzone","Multiplayer","Ranked","Zombies"]),"Call of Duty Mobile":G("Shooter","#b45309","CODM",["Multiplayer","Battle Royale","Ranked"]),"Valorant":G("Shooter","#e11d48","VAL",["Competitive","Unrated","Spike Rush"]),"Counter-Strike 2":G("Shooter","#ca8a04","CS2",["Premier","Competitive","Casual"]),"Apex Legends":G("Battle Royale","#dc2626","APEX",["Trios","Duos","Ranked"]),"Fortnite":G("Battle Royale","#7c3aed","FN",["Squads","Duos","Zero Build","Ranked"]),"PUBG Mobile":G("Battle Royale","#65a30d","PUBG",["Squads","Duos","Team Deathmatch"]),"Free Fire":G("Battle Royale","#f97316","FF",["Squads","Duos","Clash Squad"]),"EA FC 27":G("Sports","#16a34a","FC",["Pro Clubs","Ultimate Team","Friendlies"]),"eFootball":G("Sports","#2563eb","eF",["Dream Team","Online Match","Co-op"]),"NBA 2K":G("Sports","#1d4ed8","2K",["Park","Pro-Am","MyTeam"]),"Dream League Soccer":G("Sports","#0ea5e9","DLS",["Dream Team","Career","Online"]),"Rocket League":G("Sports","#0ea5e9","RL",["2v2","3v3","Ranked"]),"League of Legends":G("MOBA","#a16207","LoL",["Ranked Flex","Normal Draft","ARAM"]),"Mobile Legends":G("MOBA","#4f46e5","MLBB",["Ranked","Classic","Brawl"]),"Tekken 8":G("Fighting","#9f1239","T8",["Ranked","Player Match"]),"Minecraft":G("Sandbox","#15803d","MC",["Survival","Realms","Minigames"]),"Roblox":G("Sandbox","#475569","RBX",["Social","Adventure","Competitive"]),"GTA Online":G("Sandbox","#0f766e","GTA",["Heists","Freemode","Races"]),"Clash Royale":G("Mobile","#1e40af","CR",["Clan Wars","2v2","Ladder"]),"Other game":G("Other","#64748b","+",["Casual","Ranked"])}, PROFILE_DEFAULT={tag:"",platform:"PC",rank:"Gold",region:"Lagos",mic:"Mic on",skill:"Casual",bio:"Looking for a chill, competitive crew.",favoriteGame:"Valorant"};
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ls={get(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-let S=null,uid="",posts=[],msgs=[],members=[],room="lobby:All",roomTitle="Demo lobby",authUser=null,editingPostId="";
+let S=null,uid="",posts=[],msgs=[],members=[],playerProfiles=new Map(),room="lobby:All",roomTitle="SquadUp lobby",authUser=null,editingPostId="";
 function toast(t){const e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",2800)}
 let notifiedMessageIds=new Set(),messageAlertsReady=false;
 function refreshMessageAlerts(notifyNew=false){
 const badge=$("messageCount"),toggle=$("messageAlertToggle");
-if(!authUser?.localOnly){if(badge)badge.hidden=true;if(toggle)toggle.hidden=true;return}
-const unread=window.SquadUpLocalAuth.getUnreadMessages();
-if(badge){badge.hidden=unread.length===0;badge.textContent=unread.length>9?"9+":String(unread.length);badge.setAttribute("aria-label",unread.length+" unread messages")}
-const messagesLink=$("messagesLink");if(messagesLink){messagesLink.classList.toggle("has-unread",unread.length>0);messagesLink.setAttribute("aria-label",unread.length?`Messages, ${unread.length} unread`:"Messages")}
-if(toggle&&"Notification"in window){toggle.hidden=false;if(Notification.permission==="granted"){toggle.textContent="Alerts on";toggle.disabled=true}else if(Notification.permission==="denied"){toggle.textContent="Alerts blocked";toggle.disabled=true}}
-if(notifyNew&&messageAlertsReady){
-for(const message of unread){
-if(notifiedMessageIds.has(message.id))continue;
-notifiedMessageIds.add(message.id);
-if("Notification"in window&&Notification.permission==="granted"){
-const notification=new Notification("New SquadUp message",{body:message.sender_name+": "+(message.body||message.attachment?.name||"Sent an attachment"),icon:"squadup-logo.svg",tag:"squadup-message-"+message.id});
-notification.onclick=()=>{window.focus();location.href="messages.html?to="+encodeURIComponent(message.sender_id)};
-}else if(document.visibilityState==="visible"){
-toast("New message from "+message.sender_name);
-}
-}
-}
-for(const message of unread)notifiedMessageIds.add(message.id);
-messageAlertsReady=true;
+if(badge)badge.hidden=true;
+if(toggle)toggle.hidden=true;
 }
 const messageAlertToggle=document.getElementById("messageAlertToggle");
 messageAlertToggle.addEventListener("click",async()=>{
@@ -296,12 +283,12 @@ else if(permission==="denied")toast("Allow notifications for this site in your b
 window.addEventListener("storage",event=>{if(event.key==="sq2_local_direct_messages"||event.key==="sq2_local_accounts")refreshMessageAlerts(true)});
 function ago(t){const s=(Date.now()-t)/1000;if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+"m ago";if(s<86400)return Math.floor(s/3600)+"h ago";return Math.floor(s/86400)+"d ago"}
 function getProfile(){const p=ls.get("sq2_profile",{});return{...PROFILE_DEFAULT,...p}}
-function saveProfile(p){if(authUser?.localOnly)window.SquadUpLocalAuth.saveProfile(p);else ls.set("sq2_profile",p);}
-async function saveRemoteProfile(p){if(!authUser||authUser.localOnly||!window.squadUpSupabase)return;const {error}=await window.squadUpSupabase.from("profiles").update({gamer_tag:p.tag,game:p.favoriteGame||"",platform:p.platform||"",region:p.region||""}).eq("id",uid);if(error)throw error}
+function saveProfile(p){ls.set("sq2_profile",p);}
+async function saveRemoteProfile(p){if(!authUser||!window.squadUpSupabase)throw new Error("Log in with a live account to save your profile.");const {error}=await window.squadUpSupabase.from("profiles").update({gamer_tag:p.tag,game:p.favoriteGame||"",platform:p.platform||"",region:p.region||"",rank:p.rank||"Gold",mic:p.mic||"Mic on",skill:p.skill||"Casual",bio:p.bio||"",avatar:p.avatar||""}).eq("id",uid);if(error)throw error;playerProfiles.set(uid,{id:uid,gamer_tag:p.tag,game:p.favoriteGame||"",platform:p.platform||"",region:p.region||"",rank:p.rank||"Gold",mic:p.mic||"Mic on",skill:p.skill||"Casual",bio:p.bio||"",avatar:p.avatar||""})}
 function buildProfileBadge(profile){const score=[profile.tag,profile.rank,profile.region,profile.bio,profile.favoriteGame].filter(Boolean).length;return score>=4?"Profile ready":score>=2?"Getting started":"New profile"}
-function applyProfilePanel(){if(!$("profileTag"))return;const profile=getProfile();$("name").value=profile.tag||$("name").value||"";$("profileTag").value=profile.tag||"";$("profilePlatform").value=profile.platform||"PC";$("profileRank").value=profile.rank||"Gold";$("profileRank").disabled=!!authUser?.localOnly;$("profileRegion").value=profile.region||"";$("profileMic").value=profile.mic||"Mic on";$("profileSkill").value=profile.skill||"Casual";$("profileBio").value=profile.bio||"";const opts=Object.keys(GAMES).map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("");$("profileGame").innerHTML='<option value="">Favorite game</option>'+opts;$("profileGame").value=profile.favoriteGame||"";$("profileBadge").textContent=buildProfileBadge(profile);$("profileSummary").textContent=`${profile.tag||"Player"} · ${profile.rank} · ${profile.region||"Anywhere"} · ${profile.skill} · ${profile.mic}`;const avatar=$("profileAvatar");if(avatar){avatar.src=profile.avatar||"";avatar.hidden=!profile.avatar;}}
-function updateNameField(){const name=($("name").value||"").trim();if(!name)return;const profile=getProfile();profile.tag=name;saveProfile(profile);applyProfilePanel();}
-function tag(){const n=($("name").value||getProfile().tag||"").trim();if(!n){$("name").focus();toast("Pick a gamer tag first");return null}ls.set("sq2_name",n);const profile=getProfile();profile.tag=n;saveProfile(profile);applyProfilePanel();return n}
+function applyProfilePanel(){if(!$("profileTag"))return;const profile=getProfile();$("name").value=profile.tag||"";$("profileTag").value=profile.tag||"";$("profilePlatform").value=profile.platform||"PC";$("profileRank").value=profile.rank||"Gold";$("profileRegion").value=profile.region||"";$("profileMic").value=profile.mic||"Mic on";$("profileSkill").value=profile.skill||"Casual";$("profileBio").value=profile.bio||"";const opts=Object.keys(GAMES).map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("");$("profileGame").innerHTML='<option value="">Favorite game</option>'+opts;$("profileGame").value=profile.favoriteGame||"";$("profileBadge").textContent=buildProfileBadge(profile);$("profileSummary").textContent=`${profile.tag||"Player"} · ${profile.rank} · ${profile.region||"Anywhere"} · ${profile.skill} · ${profile.mic}`;const avatar=$("profileAvatar");if(avatar){avatar.src=profile.avatar||"";avatar.hidden=!profile.avatar;}}
+function updateNameField(){applyProfilePanel()}
+function tag(){if(!authUser){location.href="login.html";return null}const n=(getProfile().tag||$("name").value||"").trim();if(!n){$("profileTag").focus();toast("Set your gamer tag in your profile first");return null}return n}
 function readSaved(key){const value=ls.get(key,[]);if(!Array.isArray(value)){toast("Saved items are invalid; remove this site's saved data to reset them.");return []}return value}
 function writeSaved(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(e){toast("Could not save this item in browser storage.");return false}}
 function savedPostIds(){return readSaved("sq2_saved_posts").map(String)}
@@ -317,61 +304,102 @@ function editRequest(post){editingPostId=String(post.id);$("fg").value=post.g;$(
 function cancelEdit(){editingPostId="";$("post").textContent="Post request";$("cancelEdit").hidden=true;$("fg").selectedIndex=0;modes();$("fp").selectedIndex=0;$("fn").value="1";$("fr").value="";$("fmic").selectedIndex=0;$("fwhen").value="";$("ft").value="";document.querySelector("details").open=false}
 function addNotification(message,type="info"){const items=ls.get("sq2_notifications",[]);items.unshift({id:rid(),text:message,type,ts:Date.now()});ls.set("sq2_notifications",items.slice(0,8));renderNotifications()}
 function renderNotifications(){if(!$("notifications"))return;const items=ls.get("sq2_notifications",[]);$("notifications").innerHTML=items.length?items.slice(0,4).map(n=>`<div class="mini-card ${n.type||"info"}"><span class="chip">${esc(String(n.type||"info").toUpperCase())}</span><div>${esc(n.text)}</div><small>${ago(n.ts)}</small></div>`).join(""):'<div class="mu">No alerts yet. Join a squad or post a request to get started.</div>'}
-function renderMySquads(){if(!$("mySquads"))return;const hosted=posts.filter(p=>p.uid===uid);const joined=posts.filter(p=>members.some(m=>m.pid===p.id&&m.uid===uid)&&p.uid!==uid);const items=[...hosted.map(p=>({kind:"Hosting",title:p.g,meta:`${p.m} · ${p.p}`,spots:spots(p),id:p.id,when:p.when})),...joined.map(p=>({kind:"Joined",title:p.g,meta:`${p.m} · ${p.p}`,spots:spots(p),id:p.id,when:p.when}))];if(!items.length)$("mySquads").innerHTML='<div class="mu">No squads yet. Post a request or join one to start your team.</div>';else $("mySquads").innerHTML=items.map(item=>`<div class="squad-item"><strong><span>${esc(item.kind)}</span><span>${esc(item.spots)} open</span></strong><div>${esc(item.title)}</div><small class="mu">${esc(item.meta)} · ${esc(formatSessionTime(item.when))}</small><div class="squad-badges"><span>Local request</span><span>${esc(item.id.slice(0,6))}</span></div></div>`).join("")}
+function renderMySquads(){if(!$("mySquads"))return;const hosted=posts.filter(p=>p.uid===uid);const joined=posts.filter(p=>members.some(m=>m.pid===p.id&&m.uid===uid)&&p.uid!==uid);const items=[...hosted.map(p=>({kind:"Hosting",title:p.g,meta:`${p.m} · ${p.p}`,spots:spots(p),id:p.id,when:p.when})),...joined.map(p=>({kind:"Joined",title:p.g,meta:`${p.m} · ${p.p}`,spots:spots(p),id:p.id,when:p.when}))];if(!items.length)$("mySquads").innerHTML='<div class="mu">No squads yet. Post a request or join one to start your team.</div>';else $("mySquads").innerHTML=items.map(item=>`<div class="squad-item"><strong><span>${esc(item.kind)}</span><span>${esc(item.spots)} open</span></strong><div>${esc(item.title)}</div><small class="mu">${esc(item.meta)} · ${esc(formatSessionTime(item.when))}</small><div class="squad-badges"><span>Live request</span><span>${esc(item.id.slice(0,6))}</span></div></div>`).join("")}
 function renderTrending(){if(!$("trendingList"))return;const blocked=ls.get("sq2_blocked",[]);const items=[...posts.filter(p=>!blocked.includes(p.uid)&&!p.closed&&spots(p)>0)].sort((a,b)=>spots(b)-spots(a)||b.ts-a.ts).slice(0,4);$("trendingList").innerHTML=items.length?items.map(p=>`<div class="trending-item"><div><b>${esc(p.g)}</b><small>${esc(p.u)} · ${esc(p.r||"Anywhere")}</small></div><span class="chip">${spots(p)} spot${spots(p)===1?"":"s"}</span></div>`).join(""):'<div class="mu">No trending squads right now.</div>'}
 
-/* storage: shared db when available, otherwise this-device demo */
-function localStore(){const L={};const key=n=>"sq2_"+n;const read=n=>ls.get(key(n),[]);const fire=n=>(L[n]||[]).forEach(f=>f());return{live:false,sub(n,cfg,cb){(L[n]=L[n]||[]).push(()=>cb(cfg(read(n))));cb(cfg(read(n)))},async set(n,id,d){const a=read(n).filter(x=>x.id!==id);a.push({id,...d});ls.set(key(n),a.slice(-300));fire(n)},async del(n,id){ls.set(key(n),read(n).filter(x=>x.id!==id));fire(n)}}}
-async function dbStore(db){const C=n=>db.collection(n);return{live:true,sub(n,cfg,cb){let q=C(n);q=n==="members"?q:q.orderBy("ts","desc").limit(n==="messages"?300:150);q.onSnapshot(s=>cb(cfg(s.docs.map(d=>({id:d.id,...d.data()})))),e=>toast("Sync problem: "+e.code))},async set(n,id,d){await C(n).doc(id).set(d)},async del(n,id){await C(n).doc(id).delete()}}}
 const rid=()=>Math.random().toString(36).slice(2,10);
 
-async function init(){
- let db=null,user=null;
- try{
-  if(window.squadUpSupabase){
-   const {data,error}=await window.squadUpSupabase.auth.getSession();
+function liveStore(client){
+ const tables={posts:"squad_requests",members:"squad_members",messages:"squad_room_messages"};
+ async function load(name){
+  const table=tables[name];
+  let query=client.from(table).select("*");
+  if(name==="messages")query=query.order("created_at",{ascending:false}).limit(300);
+  else if(name==="posts")query=query.order("created_at",{ascending:false}).limit(200);
+  const {data,error}=await query;
+  if(error)throw error;
+  const rows=(data||[]).map(row=>{
+   if(name==="posts")return{id:row.id,...row.data,uid:row.owner_id};
+   if(name==="members")return{id:row.id,...row.data,pid:row.request_id,uid:row.user_id};
+   return{id:row.id,...row.data,room:row.room_key,uid:row.user_id};
+  });
+  return name==="messages"?rows.reverse():rows;
+ }
+ return{
+  live:true,
+  sub(name,cfg,cb){
+   let active=true;
+   const refresh=()=>load(name).then(rows=>{if(active)cb(cfg(rows))}).catch(error=>toast("Could not sync "+name+": "+error.message));
+   refresh();
+   const subscription=client.channel("squadup-"+name+"-"+uid)
+    .on("postgres_changes",{event:"*",schema:"public",table:tables[name]},refresh)
+    .subscribe(state=>{if(state==="CHANNEL_ERROR"||state==="TIMED_OUT")toast("Live sync problem: "+name+" is temporarily unavailable.")});
+   return()=>{active=false;client.removeChannel(subscription)};
+  },
+  async set(name,id,data){
+   if(!authUser)throw new Error("Log in with a live account to do that.");
+   if(name==="members"){
+    const {error}=await client.rpc("join_squad",{p_request_id:data.pid,p_data:data});
+    if(error)throw error;
+    return;
+   }
+   const createdAt=new Date(data.ts||Date.now()).toISOString();
+   let row;
+   if(name==="posts")row={id,owner_id:uid,created_at:createdAt,data};
+   else if(name==="messages")row={id,room_key:data.room,user_id:uid,created_at:createdAt,data};
+   else throw new Error("This live data type is not supported.");
+   const {error}=name==="messages"
+    ?await client.from(tables[name]).insert(row)
+    :await client.from(tables[name]).upsert(row);
    if(error)throw error;
-   authUser=data.session?.user||null;
-   if(authUser){
-    uid=authUser.id;
-    const {data:profile,error:profileError}=await window.squadUpSupabase.from("profiles").select("gamer_tag,game,platform,region").eq("id",uid).maybeSingle();
-    if(profileError)throw profileError;
-    if(profile){
-     const saved={...getProfile(),tag:profile.gamer_tag,platform:profile.platform||"PC",region:profile.region||"",favoriteGame:profile.game||getProfile().favoriteGame};
-     saveProfile(saved);ls.set("sq2_name",profile.gamer_tag);
-    }
+  },
+  async del(name,id){
+   if(!authUser)throw new Error("Log in with a live account to do that.");
+   const {error}=await client.from(tables[name]).delete().eq("id",id);
+   if(error)throw error;
+  }
+ };
+}
+
+async function init(){
+ if(window.squadUpSupabaseConfigError){$("status").textContent="Live service unavailable: "+window.squadUpSupabaseConfigError;return}
+ if(!window.squadUpSupabase){$("status").textContent="Live service not configured. Add your Supabase project URL and public key, then run supabase-setup.sql.";return}
+ try{
+  const {data,error}=await window.squadUpSupabase.auth.getSession();
+  if(error)throw error;
+  authUser=data.session?.user||null;
+  uid=authUser?.id||"";
+  const {data:profiles,error:profilesError}=await window.squadUpSupabase.from("profiles").select("id,gamer_tag,game,platform,region,rank,mic,skill,bio,avatar").order("gamer_tag").limit(500);
+  if(profilesError)throw profilesError;
+  playerProfiles=new Map((profiles||[]).map(profile=>[profile.id,profile]));
+  if(authUser){
+   const profile=playerProfiles.get(uid);
+   if(profile){
+    const saved={...getProfile(),tag:profile.gamer_tag,platform:profile.platform||"PC",region:profile.region||"",favoriteGame:profile.game||"",rank:profile.rank||"Gold",mic:profile.mic||"Mic on",skill:profile.skill||"Casual",bio:profile.bio||"",avatar:profile.avatar||""};
+    saveProfile(saved);
    }
   }
- }catch(e){toast("Account connection problem: "+e.message)}
- if(!authUser){
-  const localAccount=window.SquadUpLocalAuth.getSession();
-  if(localAccount){
-   authUser={id:localAccount.id,user_metadata:{gamer_tag:localAccount.gamerTag},localOnly:true};
-   uid=localAccount.id;
-  }
- }
- try{if(window.claude){db=await claude.use("db");user=await claude.use("user")}}catch(e){}
- try{if(user&&!uid)uid=(await user.id())||""}catch(e){}
- if(!uid){uid=ls.get("sq2_uid","");if(!uid){uid="g_"+rid();ls.set("sq2_uid",uid)}}
+ }catch(e){$("status").textContent="Account connection problem: "+e.message;return}
  if(authUser){
   $("name").value=getProfile().tag||authUser.user_metadata?.gamer_tag||"";
   $("messagesLink").href="messages.html";
-  $("loginLink").textContent=authUser.localOnly?"Log out":"Account";
-  $("loginLink").href=authUser.localOnly?"#":"messages.html";
-  if(authUser.localOnly){
-   $("loginLink").addEventListener("click",event=>{event.preventDefault();window.SquadUpLocalAuth.signOut();location.reload()});
-  }
+  $("loginLink").textContent="Log out";
+  $("loginLink").href="#";
+  $("loginLink").addEventListener("click",async event=>{event.preventDefault();const {error}=await window.squadUpSupabase.auth.signOut();if(error){toast("Could not log out: "+error.message);return}location.reload()});
   $("signupLink").style.display="none";
  }else{
   $("name").value=ls.get("sq2_name","");
   $("messagesLink").href="login.html?next=messages.html";
+  $("status").textContent="Live player listings · log in to post requests, join squads, or chat";
  }
  refreshMessageAlerts();
- S=db?await dbStore(db):localStore();
- $("status").textContent=S.live?"Connected":"Demo mode: requests and room chat are saved only in this browser";
+ S=liveStore(window.squadUpSupabase);
  S.sub("posts",a=>a.sort((x,y)=>y.ts-x.ts),a=>{posts=a;feed();renderMySquads();renderTrending();});
  S.sub("members",a=>a,a=>{members=a;feed();chat();renderMySquads();});
- S.sub("messages",a=>a.sort((x,y)=>x.ts-y.ts),a=>{msgs=a;chat();});
+ if(authUser){
+  S.sub("messages",a=>a.sort((x,y)=>x.ts-y.ts),a=>{msgs=a;chat();});
+  $("status").textContent="Connected · live squads and chat";
+ }
  applyProfilePanel();
  renderNotifications();
 }
@@ -380,7 +408,7 @@ function stats(){if(!$("s1"))return;$("s1").textContent=posts.filter(post=>!post
 function formatSessionTime(value){if(!value)return"Flexible timing";const date=new Date(value);return Number.isNaN(date.getTime())?"Time not set":date.toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+" (local)"}
 function feed(){
 stats();
-const q=$("q").value.trim().toLowerCase(),pf=$("pf").value,gameFilter=$("gameFilter").value,rankFilter=$("rankFilter").value,micFilter=$("micFilter").value,regionFilter=$("regionFilter").value.trim().toLowerCase(),blocked=ls.get("sq2_blocked",[]),saved=savedPostIds(),playerMap=new Map((authUser?.localOnly?window.SquadUpLocalAuth.getPlayers():[]).map(player=>[player.id,player]));
+const q=$("q").value.trim().toLowerCase(),pf=$("pf").value,gameFilter=$("gameFilter").value,rankFilter=$("rankFilter").value,micFilter=$("micFilter").value,regionFilter=$("regionFilter").value.trim().toLowerCase(),blocked=ls.get("sq2_blocked",[]),saved=savedPostIds(),playerMap=playerProfiles;
 let list=posts.filter(post=>{
 const player=profileForPost(post,playerMap),haystack=[post.t,post.r,post.m,post.u,post.g,post.p,player.tag,player.bio,player.favoriteGame,player.skill,post.when].join(" ").toLowerCase();
 return !blocked.includes(post.uid)&&(!pf||post.p===pf)&&(!gameFilter||post.g===gameFilter)&&(!q||haystack.includes(q))&&(!rankFilter||player.rank===rankFilter)&&(!micFilter||player.mic===micFilter)&&(!regionFilter||[player.region,post.r].some(region=>region&&region.toLowerCase().includes(regionFilter)))&&(!$("openOnly").checked||(!post.closed&&spots(post)>0))&&(!$("savedOnly").checked||saved.includes(String(post.id)));
@@ -402,15 +430,13 @@ renderMySquads();renderTrending();renderSavedItems(playerMap);
 document.querySelectorAll("[data-a]").forEach(button=>button.onclick=()=>act(button.dataset.a,button.dataset.i));
 document.querySelectorAll("[data-saved-kind]").forEach(button=>button.onclick=()=>removeSaved(button.dataset.savedKind,button.dataset.savedId));
 }
-async function act(a,id){const p=posts.find(x=>x.id===id);if(!p)return;const profile=getProfile();
+async function act(a,id){const p=posts.find(x=>x.id===id);if(!p)return;if(!authUser){location.href=a==="message"?"login.html?next=messages.html&to="+encodeURIComponent(p.uid)+"&name="+encodeURIComponent(p.u):"login.html";return}const profile=getProfile();
 try{if(a==="message"){
-if(authUser?.localOnly){location.href="messages.html?to="+encodeURIComponent(p.uid)+"&name="+encodeURIComponent(p.u);return}
 if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p.uid)){toast("This player needs a registered account before direct messaging is available.");return}
-if(!authUser){location.href="login.html?next=messages.html&to="+encodeURIComponent(p.uid)+"&name="+encodeURIComponent(p.u);return}
 location.href="messages.html?to="+encodeURIComponent(p.uid)+"&name="+encodeURIComponent(p.u);return}
 if(a==="chat")return openRoom("post:"+id,p.m+" · "+p.u+"'s squad");
 if(a==="save-post")return saveRequest(id);
-if(a==="save-player")return savePlayer(p,profileForPost(p,new Map((authUser?.localOnly?window.SquadUpLocalAuth.getPlayers():[]).map(player=>[player.id,player]))));
+if(a==="save-player")return savePlayer(p,profileForPost(p,playerProfiles));
 if(a==="edit"){if(p.uid!==uid)return toast("Only the host can edit this request");return editRequest(p)}
 if(a==="toggle-full"){if(p.uid!==uid)return toast("Only the host can change this request");const {id:postId,...data}=p;await S.set("posts",postId,{...data,closed:!p.closed,updatedAt:Date.now()});toast(p.closed?"Request reopened":"Request marked full");return}
 if(a==="report"){const blocked=ls.get("sq2_reports",[]);blocked.push({uid:p.uid,game:p.g,ts:Date.now()});ls.set("sq2_reports",blocked.slice(-50));addNotification("Local report saved for "+p.u+"'s request.","alert");return toast("Report saved here; it was not sent to SquadUp");}
@@ -421,7 +447,7 @@ if(a==="join"){if(p.closed||spots(p)<1)return toast("This squad is not accepting
 if(a==="leave"){await S.del("members",id+"_"+uid);await say("post:"+id,n+" left the squad",true);addNotification("You left "+p.g+". Keep searching for your next squad.","alert");}
 }catch(e){toast("Couldn't save. You may have view-only access.")}}
 function openRoom(k,t){room=k;roomTitle=t;chat()}
-function chat(){$("rt").textContent=roomTitle;$("lobby").style.display=room.startsWith("lobby:")?"none":"";const pid=room.startsWith("post:")?room.slice(5):null;$("rm").textContent=pid?"Squad: "+(members.filter(m=>m.pid===pid).map(m=>m.name).join(", ")||"nobody yet"):"Local chat room · visible in this browser";const l=msgs.filter(m=>m.room===room);$("msgs").innerHTML=l.length?l.map(m=>m.sys?`<div class="m sys">${esc(m.text)}</div>`:`<div class="m ${m.uid===uid?"me":""}"><b>${esc(m.name)}</b>${esc(m.text)}</div>`).join(""):'<div class="m sys">No messages yet. Say hi!</div>';$("msgs").scrollTop=1e9}
+function chat(){$("rt").textContent=roomTitle;$("lobby").style.display=room.startsWith("lobby:")?"none":"";const pid=room.startsWith("post:")?room.slice(5):null;$("rm").textContent=pid?"Squad: "+(members.filter(m=>m.pid===pid).map(m=>m.name).join(", ")||"nobody yet"):"Live community lobby";const l=msgs.filter(m=>m.room===room);$("msgs").innerHTML=l.length?l.map(m=>m.sys?`<div class="m sys">${esc(m.text)}</div>`:`<div class="m ${m.uid===uid?"me":""}"><b>${esc(m.name)}</b>${esc(m.text)}</div>`).join(""):'<div class="m sys">No messages yet. Say hi!</div>';$("msgs").scrollTop=1e9}
 async function say(r,text,sys){const n=sys?"":tag();if(n===null)return;try{await S.set("messages",rid()+Date.now().toString(36),{room:r,uid,name:n,text,sys:!!sys,ts:Date.now()})}catch(e){toast("Couldn't send. You may have view-only access.")}}
 function modes(){$("fm").innerHTML=GAMES[$("fg").value].m.map(m=>`<option>${m}</option>`).join("")}
 $("fg").innerHTML=Object.keys(GAMES).map(g=>`<option>${esc(g)}</option>`).join("");
@@ -432,14 +458,14 @@ const tiles=$("tiles");
 tiles.querySelectorAll(".tile").forEach(tile=>{tile.tabIndex=0;tile.setAttribute("role","button");tile.setAttribute("aria-pressed","false")});
 function renderGamePlayers(gameName){
 const panel=$("gamePlayers"),list=$("gamePlayerList");
-const players=window.SquadUpLocalAuth.getPlayersByGame(gameName),currentAccount=window.SquadUpLocalAuth.getSession();
+const players=[...playerProfiles.values()].filter(player=>(player.game||"").toLowerCase()===gameName.toLowerCase()&&player.id!==uid),currentAccount=authUser;
 $("gamePlayersTitle").textContent=`Players who play ${gameName} · ${players.length}`;
 list.innerHTML=players.length?players.map(player=>{
 const avatar=safeAvatar(player.avatar),messageTarget=currentAccount?"messages.html":"login.html?next=messages.html";
 const messageUrl=new URL(messageTarget,location.href);
 messageUrl.searchParams.set("to",player.id);messageUrl.searchParams.set("name",player.gamer_tag);
 return`<article class="game-player">${avatar?`<img class="game-player-avatar" src="${esc(avatar)}" alt="">`:`<div class="game-player-avatar" aria-hidden="true">${esc(player.gamer_tag.slice(0,2).toUpperCase())}</div>`}<div class="game-player-info"><strong>${esc(player.gamer_tag)}</strong><small>${esc([player.platform,player.rank,player.region||"Anywhere",player.mic].filter(Boolean).join(" · "))}</small>${player.bio?`<p class="game-player-bio">${esc(player.bio)}</p>`:""}</div><a class="game-player-message" href="${esc(messageUrl.href)}">${currentAccount?"Message":"Log in to message"}</a></article>`;
-}).join(""):`<p class="mu">No other local players have added ${esc(gameName)} to their profile yet. Player profiles in this demo are saved only in this browser.</p>`;
+}).join(""):`<p class="mu">No players have added ${esc(gameName)} to their profile yet.</p>`;
 panel.hidden=false;
 }
 function selectTile(tile){const wasSelected=tile.classList.contains("is-selected");
@@ -449,10 +475,11 @@ tile.classList.add("is-selected");tile.setAttribute("aria-pressed","true");const
 tiles.addEventListener("click",e=>{const tile=e.target.closest(".tile");if(tile)selectTile(tile)});
 tiles.addEventListener("keydown",e=>{if(e.key!=="Enter"&&e.key!==" ")return;const tile=e.target.closest(".tile");if(tile){e.preventDefault();selectTile(tile)}});
 $("closeGamePlayers").onclick=()=>{$("gamePlayers").hidden=true;tiles.querySelectorAll(".tile").forEach(item=>{item.classList.remove("is-selected");item.setAttribute("aria-pressed","false")})};
-$("name").value=ls.get("sq2_name","");$("name").oninput=()=>{const n=$("name").value.trim();if(n)ls.set("sq2_name",n);if(!authUser?.localOnly)updateNameField();};$("name").onchange=()=>{if(!authUser?.localOnly)return;const profile=getProfile();profile.tag=$("name").value.trim()||profile.tag;try{saveProfile(profile);applyProfilePanel()}catch(e){toast("Could not save gamer tag: "+e.message);applyProfilePanel()}};
-$("saveProfile").onclick=async()=>{const profile=getProfile();profile.tag=$("profileTag").value.trim()||profile.tag;profile.platform=$("profilePlatform").value;profile.rank=$("profileRank").value;profile.region=$("profileRegion").value.trim()||"Any";profile.mic=$("profileMic").value;profile.skill=$("profileSkill").value;profile.bio=$("profileBio").value.trim();profile.favoriteGame=$("profileGame").value||profile.favoriteGame;try{await saveRemoteProfile(profile);saveProfile(profile)}catch(e){toast("Could not save your profile: "+e.message);return}$("name").value=profile.tag;ls.set("sq2_name",profile.tag);applyProfilePanel();toast("Profile saved");addNotification("Your profile is ready for better squad matches.","success");};
-$("favoriteCurrent").onclick=()=>{const game=$("profileGame").value||document.querySelector(".tile.is-selected")?.querySelector("b")?.textContent.trim();if(!game){toast("Choose a favorite game first");return}const profile=getProfile();profile.favoriteGame=game;saveProfile(profile);saveRemoteProfile(profile).catch(e=>toast("Could not update your public profile: "+e.message));applyProfilePanel();toast("Favorite game set to "+game);};
+$("name").readOnly=true;$("name").title="Change your gamer tag in your profile below.";
+$("saveProfile").onclick=async()=>{const profile=getProfile();profile.tag=$("profileTag").value.trim()||profile.tag;profile.platform=$("profilePlatform").value;profile.rank=$("profileRank").value;profile.region=$("profileRegion").value.trim()||"Any";profile.mic=$("profileMic").value;profile.skill=$("profileSkill").value;profile.bio=$("profileBio").value.trim();profile.favoriteGame=$("profileGame").value||profile.favoriteGame;try{await saveRemoteProfile(profile);saveProfile(profile)}catch(e){toast("Could not save your profile: "+e.message);return}$("name").value=profile.tag;applyProfilePanel();toast("Profile saved");addNotification("Your profile is ready for better squad matches.","success");};
+$("favoriteCurrent").onclick=async()=>{const game=$("profileGame").value||document.querySelector(".tile.is-selected")?.querySelector("b")?.textContent.trim();if(!game){toast("Choose a favorite game first");return}const profile=getProfile();profile.favoriteGame=game;try{await saveRemoteProfile(profile);saveProfile(profile);applyProfilePanel();toast("Favorite game set to "+game)}catch(e){toast("Could not update your public profile: "+e.message)}};
 $("post").onclick=async()=>{
+if(!authUser){location.href="login.html";return}
 try{
 const n=tag();if(!n)return;
 const when=$("fwhen").value;
@@ -466,7 +493,7 @@ await S.set("posts",postId,{...previous,...data,ts:existing.ts,updatedAt:Date.no
 addNotification("Your "+data.g+" request was updated.","success");toast("Request updated");
 }else{
 await S.set("posts",rid(),{...data,closed:false,ts:Date.now()});
-addNotification("Your request for "+data.g+" was saved in this browser.","success");toast("Request posted");
+addNotification("Your request for "+data.g+" was posted.","success");toast("Request posted");
 }
 cancelEdit();
 }catch(error){toast("Couldn't save the request: "+(error.message||"browser storage may be unavailable."))}

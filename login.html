@@ -57,7 +57,7 @@
       <section class="intro">
         <div class="eyebrow"><span class="dot"></span> Your next squad is waiting</div>
         <h1>Good to have you back.</h1>
-        <p>Log in to continue your local demo. Accounts and messages are saved only in this browser; use a demo password, not one you use elsewhere.</p>
+        <p>Log in to find players and continue your live conversations across devices.</p>
         <div class="perks"><span>Find players who match your game</span><span>Keep your squad conversations together</span><span>Make every session a better one</span></div>
       </section>
       <section class="panel" aria-labelledby="login-title">
@@ -79,7 +79,8 @@
     </div>
   </main>
   <footer>SquadUp · Find players, chat, play.</footer>
-  <script src="local-auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script>
     const password = document.getElementById("password");
     const notice = document.getElementById("notice");
@@ -125,7 +126,7 @@
       showNotice("Password updated. Log in with your new password.");
     }
     function getRedirectTarget() {
-      const target = new URL("profile.html", location.href);
+      const target = new URL(next === "messages.html" ? "messages.html" : "index.html#profile", location.href);
       if (next === "messages.html") target.searchParams.set("next", next);
       for (const key of ["to", "name"]) {
         const value = params.get(key);
@@ -140,10 +141,13 @@
       const button = form.querySelector(".submit");
       button.disabled = true;
       try {
-        await window.SquadUpLocalAuth.signIn({
+        if (window.squadUpSupabaseConfigError) throw new Error(window.squadUpSupabaseConfigError);
+        if (!window.squadUpSupabase) throw new Error("Live accounts are not configured yet. Add the Supabase project URL and public anon key to supabase-config.js.");
+        const { error } = await window.squadUpSupabase.auth.signInWithPassword({
           email: document.getElementById("email").value.trim(),
           password: password.value
         });
+        if (error) throw error;
         location.href = getRedirectTarget();
       } catch (error) {
         showNotice(error.message || "Could not log in. Please try again.");

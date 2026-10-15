@@ -52,7 +52,7 @@
   <main>
     <div class="eyebrow">Your player card</div>
     <h1>Build your character profile</h1>
-    <p class="intro">Add a picture and a few details for your local demo profile. This demo stores your information only in this browser; do not add sensitive personal details.</p>
+    <p class="intro">Add a picture and a few details to your live player profile.</p>
     <form class="card" id="profile-form">
       <section class="identity" aria-label="Profile picture">
         <div class="avatar" id="avatar"><span id="avatar-initials">?</span><img id="avatar-image" alt="Your profile picture" hidden></div>
@@ -62,7 +62,7 @@
             <label for="avatar-file">Upload a picture</label>
             <button class="remove" id="remove-avatar" type="button">Remove picture</button>
           </div>
-          <p class="hint">JPG, PNG, or WebP. Your picture stays in this browser.</p>
+          <p class="hint">JPG, PNG, or WebP.</p>
         </div>
       </section>
       <div class="fields">
@@ -81,18 +81,35 @@
         <button class="secondary" id="logout" type="button">Log out</button>
         <button class="danger" id="delete-account" type="button">Delete local account</button>
       </div>
-      <p class="hint">Deleting your local account also removes its demo requests, squad memberships, and messages from this browser. This cannot be undone.</p>
+      <p class="hint">Profile settings are managed from the main SquadUp page.</p>
     </form>
   </main>
-  <script src="local-auth.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
   <script>
-    const auth = window.SquadUpLocalAuth;
-    const account = auth.getSession();
-    if (!account) {
-      location.replace("login.html?next=profile.html");
+    const params = new URLSearchParams(location.search);
+    if (!window.squadUpSupabase) {
+      document.getElementById("notice").textContent = window.squadUpSupabaseConfigError || "Live accounts are not configured. Set up Supabase to use profiles.";
+      document.getElementById("profile-form").hidden = true;
     } else {
+      window.squadUpSupabase.auth.getSession().then(({ data, error }) => {
+        if (error) throw error;
+        if (!data.session) {
+          location.replace("login.html?next=profile.html");
+          return;
+        }
+        const target = new URL(params.get("next") === "messages.html" ? "messages.html" : "index.html#profile", location.href);
+        for (const key of ["to", "name"]) {
+          const value = params.get(key);
+          if (value) target.searchParams.set(key, value);
+        }
+        location.replace(target.href);
+      }).catch(error => {
+        document.getElementById("notice").textContent = "Could not check your account: " + error.message;
+      });
+    }
+    /*
       const profile = auth.getProfile() || {};
-      const params = new URLSearchParams(location.search);
       const games = ["Call of Duty","Call of Duty Mobile","Valorant","Counter-Strike 2","Apex Legends","Fortnite","PUBG Mobile","Free Fire","EA FC 27","eFootball","NBA 2K","Dream League Soccer","Rocket League","League of Legends","Mobile Legends","Tekken 8","Minecraft","Roblox","GTA Online","Clash Royale","Other game"];
       const gameSelect = document.getElementById("game");
       gameSelect.innerHTML = games.map(game => `<option>${game}</option>`).join("");
@@ -200,6 +217,7 @@
         }
       });
     }
+    */
   </script>
 </body>
 </html>
