@@ -43,11 +43,17 @@
     button:disabled{opacity:.55;cursor:wait}
     @media(max-width:600px){.top{height:60px;padding:0 14px}main{padding:26px 14px 40px}.card{padding:19px}.identity{align-items:flex-start;flex-direction:column}.avatar{width:92px;height:92px}.fields{grid-template-columns:1fr}.fields .wide{grid-column:auto}}
   </style>
-</head>
+<style>
+.sq-message-link{display:inline-flex;align-items:center;gap:12px;color:inherit;text-decoration:none;padding:8px 5px;overflow:visible}
+.sq-badge-anchor{position:relative;display:inline-flex;align-items:center;overflow:visible}
+.sq-unread-badge{position:absolute;right:-11px;top:-10px;display:flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ef233c;color:white;font:700 10px/1 system-ui;border:2px solid #171824;box-sizing:border-box;z-index:2}
+.sq-unread-badge[hidden]{display:none}.sq-bell .sq-unread-badge{right:-8px;top:-7px}
+.receipt.read{color:#68cfff;font-weight:600}
+</style></head>
 <body>
   <header class="top">
     <a class="brand" href="index.html"><img src="squadup-logo.svg" alt=""><span>SquadUp</span></a>
-    <a href="index.html">Skip for now</a>
+    <a class="sq-message-link" href="messages.html" aria-label="Messages"><span class="sq-badge-anchor">Messages<span class="sq-unread-badge" hidden></span></span><span class="sq-badge-anchor sq-bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="sq-unread-badge" hidden></span></span></a><a href="index.html">Back to home</a>
   </header>
   <main>
     <div class="eyebrow">Your player card</div>
@@ -69,7 +75,7 @@
         <label>Gamer tag<input id="gamer-tag" maxlength="20" autocomplete="nickname" required></label>
         <label>Platform<select id="platform"><option>PlayStation</option><option>Xbox</option><option>PC</option><option>Mobile</option></select></label>
         <label>Favorite game<select id="game"></select></label>
-        <label>Assigned rank<select id="rank" disabled><option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option><option>Diamond</option><option>Elite</option></select><span class="rank-note">Randomly assigned when your local account is created.</span></label>
+        <label>Assigned rank<select id="rank" disabled><option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option><option>Diamond</option><option>Elite</option></select><span class="rank-note">Your current player rank.</span></label>
         <label>Region<input id="region" maxlength="30" placeholder="e.g. Lagos, Europe"></label>
         <label>Mic preference<select id="mic"><option>Mic on</option><option>Mic optional</option><option>No mic</option></select></label>
         <label>Play style<select id="skill"><option>Casual</option><option>Competitive</option><option>Hardcore</option><option>Social</option></select></label>
@@ -77,43 +83,35 @@
       </div>
       <p class="notice" id="notice" role="status" aria-live="polite"></p>
       <div class="actions">
-        <button id="save" type="submit">Save profile and continue</button>
+        <button id="save" type="submit">Save profile</button>
         <button class="secondary" id="logout" type="button">Log out</button>
         <button class="danger" id="delete-account" type="button">Delete local account</button>
       </div>
-      <p class="hint">Profile settings are managed from the main SquadUp page.</p>
+      <p class="hint">Save your details to update your shared SquadUp profile.</p>
     </form>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
   <script>
     const params = new URLSearchParams(location.search);
-    if (!window.squadUpSupabase) {
-      document.getElementById("notice").textContent = window.squadUpSupabaseConfigError || "Live accounts are not configured. Set up Supabase to use profiles.";
-      document.getElementById("profile-form").hidden = true;
-    } else {
-      window.squadUpSupabase.auth.getSession().then(({ data, error }) => {
-        if (error) throw error;
-        if (!data.session) {
-          location.replace("login.html?next=profile.html");
-          return;
-        }
-        const target = new URL(params.get("next") === "messages.html" ? "messages.html" : "index.html#profile", location.href);
-        for (const key of ["to", "name"]) {
-          const value = params.get(key);
-          if (value) target.searchParams.set(key, value);
-        }
-        location.replace(target.href);
-      }).catch(error => {
-        document.getElementById("notice").textContent = "Could not check your account: " + error.message;
-      });
-    }
-    /*
-      const profile = auth.getProfile() || {};
+    const client = window.squadUpSupabase;
+    const form = document.getElementById("profile-form");
+    form.hidden = true;
+    document.getElementById("delete-account").hidden = true;
+    async function initProfile() {
+      if (!client) throw new Error(window.squadUpSupabaseConfigError || "Supabase is not configured.");
+      const { data, error } = await client.auth.getSession();
+      if (error) throw error;
+      if (!data.session) { location.replace("login.html?next=profile.html"); return; }
+      const account = data.session.user;
+
+      const { data: stored, error: loadError } = await client.from("profiles").select("*").eq("id", account.id).single();
+      if (loadError) throw loadError;
+      const profile = { ...stored, tag: stored.gamer_tag, favoriteGame: stored.game };
       const games = ["Call of Duty","Call of Duty Mobile","Valorant","Counter-Strike 2","Apex Legends","Fortnite","PUBG Mobile","Free Fire","EA FC 27","eFootball","NBA 2K","Dream League Soccer","Rocket League","League of Legends","Mobile Legends","Tekken 8","Minecraft","Roblox","GTA Online","Clash Royale","Other game"];
       const gameSelect = document.getElementById("game");
       gameSelect.innerHTML = games.map(game => `<option>${game}</option>`).join("");
-      document.getElementById("gamer-tag").value = profile.tag || account.gamerTag;
+      document.getElementById("gamer-tag").value = profile.tag || account.user_metadata.gamer_tag || "";
       document.getElementById("platform").value = profile.platform || "PC";
       document.getElementById("game").value = profile.favoriteGame || "Valorant";
       document.getElementById("rank").value = profile.rank || "Gold";
@@ -168,32 +166,23 @@
         document.getElementById("avatar-file").value = "";
         renderAvatar();
       });
-      document.getElementById("profile-form").addEventListener("submit", event => {
+      document.getElementById("profile-form").addEventListener("submit", async event => {
         event.preventDefault();
         const button = document.getElementById("save");
         button.disabled = true;
         try {
-          auth.saveProfile({
-            tag: document.getElementById("gamer-tag").value.trim(),
+          const { data: saved, error: saveError } = await client.from("profiles").update({
+            gamer_tag: document.getElementById("gamer-tag").value.trim(),
             avatar: avatarData,
             platform: document.getElementById("platform").value,
-            favoriteGame: document.getElementById("game").value,
-            rank: document.getElementById("rank").value,
+            game: document.getElementById("game").value,
             region: document.getElementById("region").value.trim(),
             mic: document.getElementById("mic").value,
             skill: document.getElementById("skill").value,
             bio: document.getElementById("bio").value.trim()
-          });
-          const target = params.get("next") === "messages.html" ? new URL("messages.html", location.href) : new URL("index.html", location.href);
-          if (params.get("next") === "messages.html") {
-            for (const key of ["to","name"]) {
-              const value = params.get(key);
-              if (value) target.searchParams.set(key, value);
-            }
-          } else {
-            target.hash = "profile";
-          }
-          location.href = target.href;
+          }).eq("id", account.id).select("id").single();
+          if (saveError) throw saveError;
+          document.getElementById("notice").textContent = "Profile saved successfully.";
         } catch (error) {
           document.getElementById("notice").textContent = error.message || "Could not save your profile.";
         } finally {
@@ -204,20 +193,14 @@
         auth.signOut();
         location.href = "login.html";
       });
-      document.getElementById("delete-account").addEventListener("click", () => {
-        if (!window.confirm(`Delete the local account "${account.gamerTag}" and its demo data? This cannot be undone.`)) return;
-        const button = document.getElementById("delete-account");
-        button.disabled = true;
-        try {
-          auth.deleteAccount();
-          location.replace("signup.html");
-        } catch (error) {
-          document.getElementById("notice").textContent = error.message || "Could not delete this local account.";
-          button.disabled = false;
-        }
-      });
+
+      form.hidden = false;
     }
-    */
-  </script>
-</body>
+    initProfile().catch(error => {
+      form.hidden = false;
+      document.getElementById("save").disabled = true;
+      document.getElementById("notice").textContent = "Could not load profile: " + error.message;
+    });
+</script>
+<script src="chat-notifications.js"></script></body>
 </html>

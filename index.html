@@ -132,8 +132,14 @@ footer{margin-top:20px}
 @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.45);opacity:.7}}
 @media(max-width:700px){.hero{margin:14px 12px 0;padding:46px 18px 26px;border-radius:22px}.hero p{font-size:16px}.stats{gap:10px}.stats>div{min-width:calc(33.333% - 10px);padding:10px 8px}.stats b{font-size:22px}.tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-inline:2px}.world-grid{grid-template-columns:1fr}.world-header{align-items:flex-start}.feature-row{grid-template-columns:1fr 1fr}.country-chip,.region-pill{font-size:11px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+</style><style>.post-game-image{display:block;width:100%;height:180px;object-fit:cover;border-radius:12px;margin:12px 0;background:#242338}.pb{min-width:0}@media(max-width:600px){.post-game-image{height:140px}}</style><style>
+.sq-message-link{display:inline-flex;align-items:center;gap:12px;color:inherit;text-decoration:none;padding:8px 5px;overflow:visible}
+.sq-badge-anchor{position:relative;display:inline-flex;align-items:center;overflow:visible}
+.sq-unread-badge{position:absolute;right:-11px;top:-10px;display:flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ef233c;color:white;font:700 10px/1 system-ui;border:2px solid #171824;box-sizing:border-box;z-index:2}
+.sq-unread-badge[hidden]{display:none}.sq-bell .sq-unread-badge{right:-8px;top:-7px}
+.receipt.read{color:#68cfff;font-weight:600}
 </style></head><body>
-<div class="nav"><div class="top"><h1><img class="brand-mark" src="squadup-logo.svg" alt=""><span>Squad<img class="wordmark-pad" src="squadup-gamepad.svg" alt="" aria-hidden="true">Up</span></h1><div class="links"><a href="#play">Find players</a><a id="messagesLink" href="messages.html">Messages<svg class="message-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg><span id="messageCount" class="message-count" hidden></span></a><button id="messageAlertToggle" class="message-alert-toggle" type="button" hidden>Enable alerts</button><a class="profile-link" href="profile.html">My Profile</a><a href="#how">How it works</a><a href="#faq">FAQ</a><input id="name" placeholder="Your gamer tag" maxlength="20"><a id="loginLink" href="login.html">Log in</a><a class="auth-link" id="signupLink" href="signup.html">Sign up</a></div></div></div>
+<div class="nav"><div class="top"><h1><img class="brand-mark" src="squadup-logo.svg" alt=""><span>Squad<img class="wordmark-pad" src="squadup-gamepad.svg" alt="" aria-hidden="true">Up</span></h1><div class="links"><a href="#play">Find players</a><a id="messagesLink" class="sq-message-link" href="messages.html" aria-label="Messages"><span class="sq-badge-anchor">Messages<span class="sq-unread-badge" hidden></span></span><span class="sq-badge-anchor sq-bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="sq-unread-badge" hidden></span></span></a><button id="messageAlertToggle" class="message-alert-toggle" type="button" hidden>Enable alerts</button><a class="profile-link" href="profile.html">My Profile</a><a href="#how">How it works</a><a href="#faq">FAQ</a><input id="name" placeholder="Your gamer tag" maxlength="20"><a id="loginLink" href="login.html">Log in</a><a class="auth-link" id="signupLink" href="signup.html">Sign up</a></div></div></div>
 <section class="hero"><h2>Find your squad.<br><em>Win more games.</em></h2>
 <p>Find squad requests, meet players, and chat live across devices. Sign in to post, join, and message your next teammates.</p>
 <a class="cta" href="#play">Find players now</a>
@@ -266,11 +272,7 @@ const ls={get(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){re
 let S=null,uid="",posts=[],msgs=[],members=[],playerProfiles=new Map(),room="lobby:All",roomTitle="SquadUp lobby",authUser=null,editingPostId="";
 function toast(t){const e=$("toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",2800)}
 let notifiedMessageIds=new Set(),messageAlertsReady=false;
-function refreshMessageAlerts(notifyNew=false){
-const badge=$("messageCount"),toggle=$("messageAlertToggle");
-if(badge)badge.hidden=true;
-if(toggle)toggle.hidden=true;
-}
+function refreshMessageAlerts(){ window.dispatchEvent(new Event("squadup:refresh-unread")); }
 const messageAlertToggle=document.getElementById("messageAlertToggle");
 messageAlertToggle.addEventListener("click",async()=>{
 if(!("Notification"in window)){toast("Browser notifications are not supported here.");return}
@@ -406,6 +408,7 @@ async function init(){
 function spots(p){return Math.max(0,Number(p.need||1)-members.filter(m=>m.pid===p.id).length)}
 function stats(){if(!$("s1"))return;$("s1").textContent=posts.filter(post=>!post.closed&&spots(post)>0).length;$("s2").textContent=posts.reduce((n,p)=>n+(!p.closed?spots(p):0),0);$("s3").textContent=msgs.filter(m=>!m.sys).length}
 function formatSessionTime(value){if(!value)return"Flexible timing";const date=new Date(value);return Number.isNaN(date.getTime())?"Time not set":date.toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+" (local)"}
+const POST_GAME_IMAGES={"Call of Duty": "image/call-of-duty.jpg", "Call of Duty Mobile": "image/HD Yellow Call Of Duty Mobile COD Game Logo PNG.jpg", "Valorant": "image/valorant - Google Search.jpg", "Counter-Strike 2": "image/Counter-Strike 2 is finally here! - esports_inquirer.net", "Apex Legends": "image/APEX LEGENDS.jpg", "Fortnite": "image/download (20).jpg", "PUBG Mobile": "image/PlayerUnknown%27s Battlegrounds mobile é gratuito e mundial, confira_.jpg", "Free Fire": "image/Quais são os melhores personagens do Free Fire_.jpg", "EA FC 27": "image/Como corrigir o erro EA FC 27 0xc0000005.jpg", "eFootball": "image/CT-EFOOTBALL (@ct_efootball) on X.jpg", "NBA 2K": "image/NBA Insider Shams Charania revealed that OKC Thunder star, Shai Gilgeous-Alexander will be the first official star of NBA 2K26_.jpg", "Dream League Soccer": "image/Dream League Soccer 2026 on TikTok.jpg", "League of Legends": "image/New League of Legends logo is universally slated.jpg", "Mobile Legends": "image/Logo Game Mobile Legends.jpg", "Tekken 8": "image/Tekken 8 poster in HD.jpg", "Minecraft": "image/The Top Paid iPad Games of 2017.jpg", "Roblox": "image/download (21).jpg", "GTA Online": "image/%27GTA 5%27 cover art revealed - image.jpg", "Clash Royale": "image/quem joga.jpg", "Other game": "image/download (19).jpg"};
 function feed(){
 stats();
 const q=$("q").value.trim().toLowerCase(),pf=$("pf").value,gameFilter=$("gameFilter").value,rankFilter=$("rankFilter").value,micFilter=$("micFilter").value,regionFilter=$("regionFilter").value.trim().toLowerCase(),blocked=ls.get("sq2_blocked",[]),saved=savedPostIds(),playerMap=playerProfiles;
@@ -420,6 +423,7 @@ const currentSavedPlayers=new Set(savedPlayers().map(player=>player.id));
 $("feed").innerHTML=list.length?list.map(post=>{
 const game=GAMES[post.g]||{c:"#666",s:"?"},openSpots=spots(post),mine=post.uid===uid,joined=members.some(member=>member.pid===post.id&&member.uid===uid),player=profileForPost(post,playerMap),avatar=safeAvatar(player.avatar),full=!!post.closed||openSpots<1;
 return`<article class="post ${full?"is-full":""}" data-request-id="${esc(post.id)}"><img class="av post-avatar" src="${esc(avatar)}" alt="" ${avatar?"":"hidden"}><div class="av" style="background:${game.c}" ${avatar?"hidden":""}>${esc(game.s)}</div><div class="pb"><div class="pt">${esc(post.m)} · ${esc(post.g)}</div>
+<img class="post-game-image" src="${esc(POST_GAME_IMAGES[post.g]||'squadup-gamepad.svg')}" alt="${esc(post.g)} game artwork" loading="lazy">
 <div class="mu">${esc(player.tag)} · ${ago(post.ts)}</div><div class="mu">${esc([player.platform,player.rank,player.region||"Anywhere",player.mic,player.skill].filter(Boolean).join(" · "))}</div>${player.bio?`<div style="margin-top:4px">${esc(player.bio)}</div>`:""}${post.t?`<div style="margin-top:4px">${esc(post.t)}</div>`:""}
 <span class="tag">${esc(post.p)}</span><span class="tag">${esc(post.r||"Anywhere")}</span><span class="tag">${esc(post.mic||player.mic||"Mic optional")}</span><span class="tag">${esc(player.rank||"Unranked")}</span>
 <span class="tag ${!full?"ok":""}">${full?(post.closed?"Host paused":"Squad full"):openSpots+" spot"+(openSpots===1?"":"s")+" left"}</span><span class="tag">${esc(formatSessionTime(post.when))}</span>
@@ -505,5 +509,5 @@ $("lobby").onclick=()=>openRoom("lobby:All","Demo lobby");
 $("q").oninput=feed;$("pf").onchange=feed;$("gameFilter").onchange=feed;$("rankFilter").onchange=feed;$("micFilter").onchange=feed;$("regionFilter").oninput=feed;$("sortRequests").onchange=feed;$("openOnly").onchange=feed;$("savedOnly").onchange=feed;
 applyProfilePanel();chat();feed();renderNotifications();renderMySquads();renderTrending();init();
 </script>
-    </body>
+    <script src="chat-notifications.js"></script></body>
 </html>

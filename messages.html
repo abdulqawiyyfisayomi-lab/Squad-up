@@ -126,11 +126,17 @@
     }
     @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
   </style>
-</head>
+<style>
+.sq-message-link{display:inline-flex;align-items:center;gap:12px;color:inherit;text-decoration:none;padding:8px 5px;overflow:visible}
+.sq-badge-anchor{position:relative;display:inline-flex;align-items:center;overflow:visible}
+.sq-unread-badge{position:absolute;right:-11px;top:-10px;display:flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ef233c;color:white;font:700 10px/1 system-ui;border:2px solid #171824;box-sizing:border-box;z-index:2}
+.sq-unread-badge[hidden]{display:none}.sq-bell .sq-unread-badge{right:-8px;top:-7px}
+.receipt.read{color:#68cfff;font-weight:600}
+</style></head>
 <body>
   <header class="top">
     <a class="brand" href="index.html" aria-label="SquadUp home"><img src="squadup-logo.svg" alt=""><span>Squad</span><img class="wordmark-pad" src="squadup-gamepad.svg" alt="" aria-hidden="true"><span>Up</span></a>
-    <div class="top-actions"><input id="gamer-tag" type="text" maxlength="20" placeholder="Your gamer tag" aria-label="Your gamer tag" readonly><button id="logout" type="button">Log out</button><a class="back" href="index.html">← Find players</a></div>
+    <div class="top-actions"><a class="sq-message-link" href="messages.html" aria-label="Messages"><span class="sq-badge-anchor">Messages<span class="sq-unread-badge" hidden></span></span><span class="sq-badge-anchor sq-bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="sq-unread-badge" hidden></span></span></a><input id="gamer-tag" type="text" maxlength="20" placeholder="Your gamer tag" aria-label="Your gamer tag" readonly><button id="logout" type="button">Log out</button><a class="back" href="index.html">← Find players</a></div>
   </header>
   <main>
     <div class="heading">
@@ -170,7 +176,7 @@
     const esc=value=>String(value==null?"":value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
     const client=window.squadUpSupabase;
     const params=new URLSearchParams(location.search);
-    let uid="",selected="",profiles=new Map(),messages=[],channel=null,searchTimer=0,pendingAttachment=null,mediaRecorder=null,recordingStream=null,recordingChunks=[],recordingTimer=0,recordingSeconds=0;
+    let uid="",selected="",profiles=new Map(),messages=[],channel=null,searchTimer=0,pendingAttachment=null,mediaRecorder=null,recordingStream=null,recordingChunks=[],recordingTimer=0,recordingSeconds=0,sending=false;
     function setStatus(message){$("status").textContent=message}
     function messageTime(value){return new Date(value).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}
     function selectedMessages(peer){return messages.filter(item=>(item.sender_id===uid&&item.recipient_id===peer)||(item.sender_id===peer&&item.recipient_id===uid))}
@@ -180,6 +186,7 @@
     function clearAttachment(){
       pendingAttachment=null;
       $("photo-file").value="";
+      $("attachment-preview").textContent="Choose a photo or record a voice note.";
       $("remove-attachment").hidden=true;
       updateSendButton();
     }
@@ -189,13 +196,18 @@
       $("remove-attachment").hidden=false;
       updateSendButton();
     }
-    function updateSendButton(){$("send").disabled=!selected||!!mediaRecorder||(!$("message").value.trim()&&!pendingAttachment)}
+    function updateSendButton(){$("send").disabled=sending||!selected||!!mediaRecorder||(!$("message").value.trim()&&!pendingAttachment)}
     function updateAttachmentControls(){
-      $("attachment-actions").hidden=true;
+      $("attachment-actions").hidden=!selected;
+      $("choose-photo").disabled=!selected||!!mediaRecorder;
+      $("record-voice").disabled=!selected;
+      $("remove-attachment").disabled=!!mediaRecorder;
       updateSendButton();
     }
     function renderAttachment(attachment){
       if(!attachment?.dataUrl)return"";
+      if(attachment.type==="image"&&!/^data:image\/(jpeg|png|webp);base64,/.test(attachment.dataUrl))return"";
+      if(attachment.type==="audio"&&!/^data:audio\/(webm|ogg|mp4|mpeg)[^,]*;base64,/.test(attachment.dataUrl))return"";
       const source=esc(attachment.dataUrl);
       if(attachment.type==="image")return`<img class="message-image" src="${source}" alt="Photo attachment" loading="lazy">`;
       if(attachment.type==="audio")return`<audio class="message-audio" controls preload="metadata" src="${source}">Your browser cannot play this voice note.</audio>`;
@@ -230,7 +242,7 @@
       $("active-avatar").textContent=profile.gamer_tag.slice(0,2).toUpperCase();
       $("active-sub").textContent=[profile.game,profile.platform,profile.region].filter(Boolean).join(" · ")||"SquadUp player";
       const items=selectedMessages(selected);
-      $("feed").innerHTML=items.length?items.map(item=>`<div class="message ${item.sender_id===uid?"mine":""}">${item.body?`<div class="message-text">${esc(item.body)}</div>`:""}${renderAttachment(item.attachment)}<div class="time">${item.sender_id===uid?"You":esc(profile.gamer_tag)} · ${messageTime(item.created_at)}${item.sender_id===uid&&item.read_at?" · Read":""}</div></div>`).join(""):'<div class="welcome"><strong>Say hello to '+esc(profile.gamer_tag)+'.</strong>Keep it friendly and never share passwords or sensitive personal information.</div>';
+      $("feed").innerHTML=items.length?items.map(item=>`<div class="message ${item.sender_id===uid?"mine":""}">${item.body?`<div class="message-text">${esc(item.body)}</div>`:""}${renderAttachment(item.attachment)}<div class="time">${item.sender_id===uid?"You":esc(profile.gamer_tag)} · ${messageTime(item.created_at)}${item.sender_id===uid?` · <span class="receipt ${item.read_at?'read':'sent'}">${item.read_at?'✓✓ Read':'✓ Sent'}</span>`:""}</div></div>`).join(""):'<div class="welcome"><strong>Say hello to '+esc(profile.gamer_tag)+'.</strong>Keep it friendly and never share passwords or sensitive personal information.</div>';
       $("feed").scrollTop=$("feed").scrollHeight;
       $("message").disabled=false;
       $("send").disabled=false;
@@ -257,10 +269,11 @@
       if(requested&&requested!==uid&&profiles.has(requested))selectContact(requested);
     }
     async function refreshMessages(){
-      const {data,error}=await client.from("direct_messages").select("id,sender_id,recipient_id,body,created_at,read_at").or(`sender_id.eq.${uid},recipient_id.eq.${uid}`).order("created_at",{ascending:false}).limit(500);
+      const {data,error}=await client.from("direct_messages").select("id,sender_id,recipient_id,body,attachment,created_at,read_at").or(`sender_id.eq.${uid},recipient_id.eq.${uid}`).order("created_at",{ascending:false}).limit(500);
       if(error){setStatus("Could not load messages: "+error.message);return}
       messages=(data||[]).reverse();
       render();
+      await markVisibleMessagesRead();
     }
     async function selectContact(peer){
       if(!profiles.has(peer))return;
@@ -269,11 +282,28 @@
       selected=peer;
       $("messenger").classList.add("show-conversation");
       render();
-      const {error}=await client.from("direct_messages").update({read_at:new Date().toISOString()}).eq("sender_id",peer).eq("recipient_id",uid).is("read_at",null);
-      if(error){setStatus("Could not mark messages as read: "+error.message);return}
+      await markVisibleMessagesRead();
       await refreshMessages();
       $("message").focus();
     }
+    let markingRead=false;
+    async function markVisibleMessagesRead(){
+      if(markingRead||!selected||document.visibilityState!=="visible"||!document.hasFocus())return;
+      const ids=messages.filter(item=>item.sender_id===selected&&item.recipient_id===uid&&!item.read_at).map(item=>item.id);
+      if(!ids.length)return;
+      markingRead=true;
+      try{
+        const now=new Date().toISOString();
+        const {error}=await client.from("direct_messages").update({read_at:now}).in("id",ids).eq("recipient_id",uid).is("read_at",null);
+        if(error){setStatus("Could not update read receipts: "+error.message);return;}
+        const readIds=new Set(ids);
+        messages.forEach(item=>{if(readIds.has(item.id))item.read_at=now;});
+        renderContacts();
+        window.dispatchEvent(new Event("squadup:refresh-unread"));
+      }finally{markingRead=false;}
+    }
+    window.addEventListener("focus",()=>markVisibleMessagesRead().catch(error=>setStatus(error.message)));
+    document.addEventListener("visibilitychange",()=>{if(!document.hidden)refreshMessages().catch(error=>setStatus(error.message));});
     function fileAsDataUrl(blob,onloadError){
       const reader=new FileReader();
       reader.onload=()=>typeof reader.result==="string"?showPendingAttachment({
@@ -342,6 +372,7 @@
         mediaRecorder.ondataavailable=event=>{if(event.data.size)recordingChunks.push(event.data)};
         mediaRecorder.onerror=()=>setStatus("Voice recording failed. Check microphone access and try again.");
         mediaRecorder.onstop=()=>{
+          clearInterval(recordingTimer);
           const recorder=mediaRecorder;
           mediaRecorder=null;
           recordingStream?.getTracks().forEach(track=>track.stop());
@@ -424,10 +455,10 @@
     $("composer").addEventListener("submit",async event=>{
       event.preventDefault();
       const body=$("message").value.trim();
-      if(!selected||!body||body.length>300)return;
+      if(sending||!selected||(!body&&!pendingAttachment)||body.length>300)return;
       if(mediaRecorder){setStatus("Stop the voice recording before sending.");return}
       $("send").disabled=true;
-      const {error}=await client.from("direct_messages").insert({sender_id:uid,recipient_id:selected,body});
+      const {error}=await client.from("direct_messages").insert({sender_id:uid,recipient_id:selected,body,attachment:pendingAttachment});
       $("send").disabled=false;
       if(error){setStatus("Message not sent: "+error.message);return}
       $("message").value="";
@@ -441,7 +472,12 @@
       if(error){setStatus("Could not log out: "+error.message);return}
       location.href="login.html";
     });
+    window.addEventListener("pagehide",()=>{
+      clearInterval(recordingTimer);
+      if(mediaRecorder?.state==="recording")mediaRecorder.stop();
+      recordingStream?.getTracks().forEach(track=>track.stop());
+    });
     start().catch(error=>setStatus("Messaging could not start: "+error.message));
   </script>
-</body>
+<script src="chat-notifications.js"></script></body>
 </html>
