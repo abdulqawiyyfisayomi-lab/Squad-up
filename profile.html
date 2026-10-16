@@ -49,11 +49,11 @@
 .sq-unread-badge{position:absolute;right:-11px;top:-10px;display:flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ef233c;color:white;font:700 10px/1 system-ui;border:2px solid #171824;box-sizing:border-box;z-index:2}
 .sq-unread-badge[hidden]{display:none}.sq-bell .sq-unread-badge{right:-8px;top:-7px}
 .receipt.read{color:#68cfff;font-weight:600}
-</style><link rel="stylesheet" href="community.css"><link rel="stylesheet" href="app-polish.css"></head>
+</style><link rel="stylesheet" href="community.css"><link rel="stylesheet" href="app-polish.css"><link rel="stylesheet" href="media-update.css"></head>
 <body>
   <header class="top">
     <a class="brand" href="index.html"><img src="squadup-logo.svg" alt=""><span>SquadUp</span></a>
-    <a class="sq-message-link" href="messages.html" aria-label="Messages"><span class="sq-badge-anchor">Messages<span class="sq-unread-badge" hidden></span></span><span class="sq-badge-anchor sq-bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="sq-unread-badge" hidden></span></span></a><a href="index.html">Back to home</a>
+    <a class="sq-message-link" href="messages.html" aria-label="Messages"><span class="sq-badge-anchor">Messages</span><span class="sq-badge-anchor sq-bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="sq-unread-badge" hidden></span></span></a><a href="index.html">Back to home</a>
   </header>
   <main>
     <div class="eyebrow">Your player card</div>
@@ -108,7 +108,7 @@
       const { data: stored, error: loadError } = await client.from("profiles").select("*").eq("id", account.id).single();
       if (loadError) throw loadError;
       const profile = { ...stored, tag: stored.gamer_tag, favoriteGame: stored.game };
-      const games = ["Call of Duty","Call of Duty Mobile","Valorant","Counter-Strike 2","Apex Legends","Fortnite","PUBG Mobile","Free Fire","EA FC 27","eFootball","NBA 2K","Dream League Soccer","Rocket League","League of Legends","Mobile Legends","Tekken 8","Minecraft","Roblox","GTA Online","Clash Royale","Other game"];
+      const games = ["Call of Duty","Call of Duty Mobile","Valorant","Counter-Strike 2","Apex Legends","Fortnite","PUBG Mobile","Free Fire","EA FC 27","eFootball","NBA 2K","Dream League Soccer","8 Ball Pool","League of Legends","Mobile Legends","Tekken 8","Minecraft","Roblox","GTA Online","Clash Royale"];
       const gameSelect = document.getElementById("game");
       gameSelect.innerHTML = games.map(game => `<option>${game}</option>`).join("");
       document.getElementById("gamer-tag").value = profile.tag || account.user_metadata.gamer_tag || "";

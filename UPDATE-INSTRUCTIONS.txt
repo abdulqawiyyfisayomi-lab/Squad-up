@@ -1,0 +1,64 @@
+SQUADUP MEDIA AND SOCIAL UPDATE
+
+For your existing working SquadUp website:
+1. Extract this ZIP on your computer.
+2. Open media-social-setup.sql in Notepad. Copy ALL its text.
+3. Supabase > SQL Editor > New query. Paste the text and click Run.
+   Wait for "Success. No rows returned". If it errors, keep the error and stop here.
+4. Open your Squad-up repository on GitHub. Choose Add file > Upload files.
+5. Upload the website files from INSIDE the extracted folder, including the image
+   folder, 8-ball-pool.jpg, all HTML, CSS, JS and SVG files. Keep their names.
+   Do not upload the ZIP itself or put the files inside an extra parent folder.
+6. Click Commit changes. Vercel will deploy the update automatically.
+7. Wait until the newest Vercel deployment says Ready. Open your website and
+   refresh with Ctrl+Shift+R (or reload on your phone).
+
+Do not rerun chat-media-setup.sql AFTER media-social-setup.sql: the older script
+supports only images and audio and would disable video message attachments.
+You do not need to rerun the older SQL files for this update.
+For a fresh empty project only, run SQL in this order:
+  supabase-setup.sql, community-setup.sql, chat-media-setup.sql,
+  media-social-setup.sql.
+
+WHAT IS INCLUDED
+- Purple dashboard and restored "Find your squad. Win more games." banner.
+- Your supplied 8 Ball Pool image; Rocket League replaced and Other games removed.
+- Like/unlike and repost/undo on squad requests and gameplay posts, saved online.
+- Gameplay uploads for signed-in users, up to 50 MB. MP4 works on most devices.
+- Private video messages, up to 25 MB, alongside existing images and voice notes.
+- Notification count on the bell only. Messages text has no count badge.
+- Responsive profile link and mobile layouts. Created by SILVA footer retained.
+- Go live / watch page, with camera or gameplay screen sharing.
+
+LIVE VIDEO
+Live uses direct WebRTC connections, intended for small squads. Both people must
+be signed in. The site must use HTTPS (your Vercel site does). Allow camera and
+microphone permissions. For screen audio, choose a browser-supported tab/source
+and enable its audio option; some phones do not support screen sharing.
+
+A public STUN server is configured. Some mobile, corporate and restrictive
+networks require a TURN relay. Reliable live viewing across all networks therefore
+requires a TURN service and short-lived ICE credentials in live-config.js, ideally
+issued by a trusted backend. Never publish a private TURN-provider API key or a
+Supabase secret/service_role key in JavaScript. This release does not provision a
+TURN service. It is not a large-audience streaming service or a stream recorder.
+Closing the host page ends the video; its listing expires within 90 seconds.
+
+CHECK AFTER DEPLOYMENT
+Use two separate accounts/devices. Like a request on one and check its count on
+the other. Repost, reload, and confirm it stays. Upload a gameplay video and play
+it from the second account. Send a short MP4 in a private chat and confirm the
+recipient can play it. Start a live camera stream and choose Watch live on the
+second account. Test profile navigation and save details on phone and desktop.
+
+Code syntax and mocked save/signaling behavior have been checked. The SQL has
+not been run against your Supabase project, and live browser/device tests have
+not been completed. Keep a copy of your currently working website before updating.
+
+LIVE COMMENTS ADDED
+The host and signed-in viewers can send comments while watching a stream.
+Comments appear automatically with player names and the host label.
+If media-social-setup.sql has already been run, run live-comments-setup.sql
+in Supabase SQL Editor. Otherwise media-social-setup.sql now includes it.
+Upload the revised live.html, live.js, live-comments.js and media-update.css.
+This adds comments; it does not fix the still-unidentified video connection issue.

@@ -132,11 +132,11 @@
 .sq-unread-badge{position:absolute;right:-11px;top:-10px;display:flex;align-items:center;justify-content:center;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:#ef233c;color:white;font:700 10px/1 system-ui;border:2px solid #171824;box-sizing:border-box;z-index:2}
 .sq-unread-badge[hidden]{display:none}.sq-bell .sq-unread-badge{right:-8px;top:-7px}
 .receipt.read{color:#68cfff;font-weight:600}
-</style><link rel="stylesheet" href="community.css"><link rel="stylesheet" href="app-polish.css"></head>
+</style><link rel="stylesheet" href="community.css"><link rel="stylesheet" href="app-polish.css"><link rel="stylesheet" href="media-update.css"></head>
 <body>
   <header class="top">
     <a class="brand" href="index.html" aria-label="SquadUp home"><img src="squadup-logo.svg" alt=""><span>Squad</span><img class="wordmark-pad" src="squadup-gamepad.svg" alt="" aria-hidden="true"><span>Up</span></a>
-    <div class="top-actions"><a class="sq-message-link" href="messages.html" aria-label="Messages"><span class="sq-badge-anchor">Messages<span class="sq-unread-badge" hidden></span></span><span class="sq-badge-anchor sq-bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="sq-unread-badge" hidden></span></span></a><input id="gamer-tag" type="text" maxlength="20" placeholder="Your gamer tag" aria-label="Your gamer tag" readonly><button id="logout" type="button">Log out</button><a class="back" href="index.html">← Find players</a></div>
+    <div class="top-actions"><a class="sq-message-link" href="messages.html" aria-label="Messages"><span class="sq-badge-anchor">Messages</span><span class="sq-badge-anchor sq-bell"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="sq-unread-badge" hidden></span></span></a><input id="gamer-tag" type="text" maxlength="20" placeholder="Your gamer tag" aria-label="Your gamer tag" readonly><button id="logout" type="button">Log out</button><a class="back" href="index.html">← Find players</a></div>
   </header>
   <main>
     <div class="heading">
@@ -156,7 +156,7 @@
         </header>
         <div class="social-chat-controls" id="social-chat-controls" hidden><button type="button" id="chat-add-friend">Add friend</button><button type="button" id="chat-block">Block player</button><button type="button" id="chat-report">Report</button></div><div class="game-id-detail" id="game-id-detail"></div><div class="typing-line" id="typing-line" aria-live="polite"></div><div class="feed" id="feed" aria-live="polite"><div class="welcome"><strong>Your squad starts with a hello.</strong>Choose any registered player to start a conversation.</div></div>
         <div class="attachment-actions" id="attachment-actions" hidden>
-          <input id="photo-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+          <input id="video-file" type="file" accept="video/mp4,video/webm,video/quicktime" hidden><button id="choose-video" class="attach-button" type="button" title="Send video" aria-label="Send video" disabled><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="12" height="14" rx="3"/><path d="m15 10 6-4v12l-6-4z"/></svg></button><input id="photo-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
           <button class="attach-button" id="choose-photo" type="button" disabled title="Send image" aria-label="Send image"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m4 17 5-5 4 4 3-3 4 5"/></svg></button>
           <button class="record-button" id="record-voice" type="button" disabled title="Record voice message" aria-label="Record voice message"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/></svg></button>
           <span class="attachment-preview" id="attachment-preview" aria-live="polite">Live text chat is available.</span>
@@ -176,7 +176,7 @@
     const esc=value=>String(value==null?"":value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
     const client=window.squadUpSupabase;
     const params=new URLSearchParams(location.search);
-    let uid="",selected="",profiles=new Map(),messages=[],channel=null,searchTimer=0,pendingAttachment=null,mediaRecorder=null,recordingStream=null,recordingChunks=[],recordingTimer=0,recordingSeconds=0,sending=false;
+    let uid="",selected="",profiles=new Map(),messages=[],channel=null,searchTimer=0,pendingAttachment=null,pendingVideo=null,mediaRecorder=null,recordingStream=null,recordingChunks=[],recordingTimer=0,recordingSeconds=0,sending=false;
     function setVoiceIcon(state,seconds=0){
       const button=$("record-voice");
       const label=state==="recording"?"Stop voice recording":state==="preparing"?"Preparing voice note":"Record voice message";
@@ -188,29 +188,42 @@
     function selectedMessages(peer){return messages.filter(item=>(item.sender_id===uid&&item.recipient_id===peer)||(item.sender_id===peer&&item.recipient_id===uid))}
     function latestMessage(peer){return selectedMessages(peer).at(-1)}
     function unreadCount(peer){return messages.filter(item=>item.sender_id===peer&&item.recipient_id===uid&&!item.read_at).length}
-    function attachmentPreview(message){return message.body|| (message.attachment?.type==="image"?"Photo":message.attachment?.type==="audio"?"Voice note":"")}
+    function attachmentPreview(message){return message.body|| (message.attachment?.type==="image"?"Photo":message.attachment?.type==="audio"?"Voice note":message.attachment?.type==="video"?"Video":"")}
     function clearAttachment(){
-      pendingAttachment=null;
+      pendingAttachment=null;pendingVideo=null;
+      $("video-file").value="";
       $("photo-file").value="";
-      $("attachment-preview").textContent="Choose a photo or record a voice note.";
+      $("attachment-preview").textContent="Choose a photo, video or voice note.";
       $("remove-attachment").hidden=true;
       updateSendButton();
     }
     function showPendingAttachment(attachment){
+      if(attachment.type!=="video")pendingVideo=null;
       pendingAttachment=attachment;
-      $("attachment-preview").textContent=`${attachment.type==="image"?"Photo":"Voice note"} attached: ${attachment.name}`;
+      $("attachment-preview").textContent=`${attachment.type==="image"?"Photo":attachment.type==="video"?"Video":"Voice note"} attached: ${attachment.name}`;
       $("remove-attachment").hidden=false;
       updateSendButton();
     }
     function updateSendButton(){$("send").disabled=!!window.SquadCommunity?.blocked(selected)||sending||!selected||!!mediaRecorder||(!$("message").value.trim()&&!pendingAttachment)}
     function updateAttachmentControls(){
       $("attachment-actions").hidden=!selected;
-      $("choose-photo").disabled=!selected||!!mediaRecorder;
-      $("record-voice").disabled=!selected;
-      $("remove-attachment").disabled=!!mediaRecorder;
+      $("choose-photo").disabled=!selected||!!mediaRecorder||sending;
+      $("choose-video").disabled=!selected||!!mediaRecorder||sending;
+      $("record-voice").disabled=!selected||sending;
+      $("remove-attachment").disabled=!!mediaRecorder||sending;
       updateSendButton();
     }
+    const videoUrls=new Map();
+    async function signChatVideo(path){
+      if(!path||videoUrls.get(path)?.expires>Date.now())return;
+      const {data,error}=await client.storage.from("squad-media").createSignedUrl(path,3600);
+      if(!error)videoUrls.set(path,{url:data.signedUrl,expires:Date.now()+3500000});
+    }
     function renderAttachment(attachment){
+      if(attachment?.type==="video"){
+        const url=videoUrls.get(attachment.path)?.url;
+        return url?`<video class="message-video" src="${esc(url)}" controls playsinline preload="metadata"></video>`:'<span class="video-unavailable">Video unavailable — reopen the conversation to retry.</span>';
+      }
       if(!attachment?.dataUrl)return"";
       if(attachment.type==="image"&&!/^data:image\/(jpeg|png|webp);base64,/.test(attachment.dataUrl))return"";
       if(attachment.type==="audio"&&!/^data:audio\/(webm|ogg|mp4|mpeg)[^,]*;base64,/.test(attachment.dataUrl))return"";
@@ -279,11 +292,13 @@
       const {data,error}=await client.from("direct_messages").select("id,sender_id,recipient_id,body,attachment,created_at,read_at").or(`sender_id.eq.${uid},recipient_id.eq.${uid}`).order("created_at",{ascending:false}).limit(500);
       if(error){setStatus("Could not load messages: "+error.message);return}
       messages=(data||[]).reverse();
+      await Promise.all([...new Set(selectedMessages(selected).filter(x=>x.attachment?.type==="video").map(x=>x.attachment.path))].map(signChatVideo));
       render();
       await markVisibleMessagesRead();
     }
     async function selectContact(peer){
       if(!profiles.has(peer))return;
+      if(sending||uploadingVideo){setStatus("Please wait for your video to finish sending.");return}
       if(mediaRecorder){setStatus("Stop the voice recording before changing conversations.");return}
       if(selected!==peer&&pendingAttachment)clearAttachment();
       selected=peer;
@@ -319,6 +334,13 @@
       reader.onerror=()=>setStatus(onloadError);
       reader.readAsDataURL(blob);
     }
+    let uploadingVideo=false;
+    $("choose-video").onclick=()=>$("video-file").click();
+    $("video-file").onchange=event=>{
+      const file=event.target.files[0];if(!file)return;
+      if(!["video/mp4","video/webm","video/quicktime"].includes(file.type)||file.size>25*1024*1024){setStatus("Choose an MP4, WebM or MOV video up to 25 MB. MP4 works on the most devices.");event.target.value="";return;}
+      pendingVideo=file;showPendingAttachment({type:"video",name:file.name,mime:file.type});
+    };
     $("choose-photo").addEventListener("click",()=>$("photo-file").click());
     $("photo-file").addEventListener("change",event=>{
       const file=event.currentTarget.files[0];
@@ -466,7 +488,23 @@
       if(sending||!selected||(!body&&!pendingAttachment)||body.length>300)return;
       if(mediaRecorder){setStatus("Stop the voice recording before sending.");return}
       $("send").disabled=true;
-      const {error}=await client.from("direct_messages").insert({sender_id:uid,recipient_id:selected,body,attachment:pendingAttachment});
+      sending=true;updateAttachmentControls();$("message").disabled=true;
+      let error=null,uploadedPath=null;
+      const peer=selected;
+      try{
+        let attachment=pendingAttachment;
+        if(pendingVideo){
+          uploadingVideo=true;setStatus("Uploading video…");
+          const ext=pendingVideo.type==="video/mp4"?"mp4":pendingVideo.type==="video/webm"?"webm":"mov";
+          uploadedPath=`dm/${uid}/${peer}/${crypto.randomUUID()}.${ext}`;
+          const upload=await client.storage.from("squad-media").upload(uploadedPath,pendingVideo,{contentType:pendingVideo.type,upsert:false});
+          if(upload.error)throw upload.error;
+          attachment={type:"video",path:uploadedPath,name:pendingVideo.name,mime:pendingVideo.type};
+        }
+        const result=await client.from("direct_messages").insert({sender_id:uid,recipient_id:peer,body,attachment});
+        if(result.error)throw result.error;
+      }catch(e){error=e;if(uploadedPath)await client.storage.from("squad-media").remove([uploadedPath]);}
+      finally{uploadingVideo=false;sending=false;$("message").disabled=false;updateAttachmentControls();}
       $("send").disabled=false;
       if(error){setStatus("Message not sent: "+error.message);return}
       $("message").value="";
